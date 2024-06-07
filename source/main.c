@@ -16,20 +16,28 @@ int _main(struct thread *td) {
 #endif
 
   jailbreak();
-
   initSysUtil();
 
   unlink("/update/PS4UPDATE.PUP.net.temp");
   rmdir("/update/PS4UPDATE.PUP.net.temp");
-  mkdir("/update/PS4UPDATE.PUP.net.temp", 777);
+  if (mkdir("/update/PS4UPDATE.PUP.net.temp", 0777) != 0) {
+    printf_debug("Failed to create /update/PS4UPDATE.PUP.net.temp.");
+  }
 
   unlink("/update/PS4UPDATE.PUP");
   rmdir("/update/PS4UPDATE.PUP");
-  mkdir("/update/PS4UPDATE.PUP", 777);
+  if (mkdir("/update/PS4UPDATE.PUP", 0777) != 0) {
+    printf_debug("Failed to create /update/PS4UPDATE.PUP.");
+  }
 
-  printf_notification("Disabled updates!");
 
-#ifdef DEBUG_SOCKET
+  char fw_version[6] = {0};
+
+  get_firmware_string(fw_version);
+
+  printf_notification("Disabled updates!\nPS4 Firmware %s", fw_version);
+
+#ifdef DEBUG_SOCKkET
   printf_debug("Closing socket...\n");
   SckClose(DEBUG_SOCK);
 #endif
